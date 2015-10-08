@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 public static class UtilSerialization
 {
-	public static string saveFolderName = "GameSaves";
+	public static string saveFolderName = "SaveData";
 
 	/**
 	 * Get the static save loctation relative to the games top folder.
