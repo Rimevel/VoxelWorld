@@ -15,11 +15,11 @@ public class TerrainGen
 	float dirtNoise = 0.04f;
 	float dirtNoiseHeight = 3;
 
-	public Chunk ChunkGen(Chunk chunk)
+	public ChunkData ChunkGen(ChunkData chunk)
 	{
-		for(int x = chunk.pos.x; x < chunk.pos.x + Chunk.chunkSize; x++)
+		for(int x = chunk.pos.x; x < chunk.pos.x + ChunkData.chunkSize; x++)
 		{
-			for(int z = chunk.pos.z; z < chunk.pos.z + Chunk.chunkSize; z++)
+			for(int z = chunk.pos.z; z < chunk.pos.z + ChunkData.chunkSize; z++)
 			{
 				chunk = ChunkColumnGen(chunk, x, z);
 			}
@@ -33,8 +33,9 @@ public class TerrainGen
 		return Mathf.FloorToInt((Noise.Generate(x * scale, y * scale, z * scale) + 1f) + (max / 2f));
 	}
 
-	public Chunk ChunkColumnGen(Chunk chunk, int x, int z)
+	public ChunkData ChunkColumnGen(ChunkData chunk, int x, int z)
 	{
+		bool empty = true;
 		int stoneHeight = Mathf.FloorToInt(stoneBaseHeight);
 		stoneHeight += GetNoise(x, 0, z, stoneMountainFrequency, Mathf.FloorToInt(stoneMountainHeight));
 
@@ -48,21 +49,25 @@ public class TerrainGen
 		int dirtHeight = stoneHeight + Mathf.FloorToInt(dirtBaseHeight);
 		dirtHeight += GetNoise(x, 100, z, dirtNoise, Mathf.FloorToInt(dirtNoiseHeight));
 
-		for(int y = chunk.pos.y; y < chunk.pos.y + Chunk.chunkSize; y++)
+		for(int y = chunk.pos.y; y < chunk.pos.y + ChunkData.chunkSize; y++)
 		{
 			if(y <= stoneHeight)
 			{
 				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, 1);
+				if(empty){empty = false;}
 			}
 			else if(y <= dirtHeight)
 			{
 				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, 2);
+				if(empty){empty = false;}
 			}
 			else
 			{
 				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, 0);
 			}
 		}
+
+		chunk.empty = empty;
 
 		return chunk;
 	}

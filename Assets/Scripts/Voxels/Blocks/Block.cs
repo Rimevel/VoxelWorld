@@ -17,7 +17,7 @@ public class Block
 	/**
 	 * Get block mesh as a MeshData object.
 	 **/
-	public virtual MeshData GetBlockMesh(Chunk chunk, int x, int y, int z, MeshData meshData)
+	public virtual MeshData GetBlockMesh(ChunkData chunk, int x, int y, int z, MeshData meshData)
 	{
 		meshData.useRenderDataForCol = true;
 

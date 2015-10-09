@@ -9,7 +9,7 @@ public class BlockAir : Block
 
 	}
 
-	public override MeshData GetBlockMesh (Chunk chunk, int x, int y, int z, MeshData meshData)
+	public override MeshData GetBlockMesh (ChunkData chunk, int x, int y, int z, MeshData meshData)
 	{
 		return meshData;
 	}

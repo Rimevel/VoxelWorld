@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class World : MonoBehaviour
 {
-	public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>();
+	public Dictionary<WorldPos, ChunkData> chunks = new Dictionary<WorldPos, ChunkData>();
 	public GameObject chunkPrefab;
 
 	public string worldName = "world";
@@ -25,34 +25,57 @@ public class World : MonoBehaviour
 	{
 		WorldPos worldPos = new WorldPos(x, y, z);
 
-		GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x, y, z), Quaternion.Euler(Vector3.zero)) as GameObject;
+		ChunkData data = new ChunkData();
 
-		Chunk newChunk = newChunkObject.GetComponent<Chunk>();
+		data.pos = worldPos;
+		data.world = this;
 
-		newChunk.pos = worldPos;
-		newChunk.world = this;
+		chunks.Add(worldPos, data);
 
-		chunks.Add(worldPos, newChunk);
-
-		if(!UtilSerialization.LoadChunk(newChunk))
+		if(!UtilSerialization.LoadChunk(data))
 		{
 			var terrainGen = new TerrainGen();
-			newChunk = terrainGen.ChunkGen(newChunk);
+			data = terrainGen.ChunkGen(data);
+			MakePhysical(data);
+			return;
 		}
+
+		data.empty = IsChunkEmpty(data);
+		MakePhysical(data);
+	}
+
+	/**
+	 * Create a new GameObject with a chunk component
+	 * and link it to the given chunk data.
+	 * Returns false if the chunk is empty. In that case
+	 * no visual chunk will be generated.
+	 **/
+	bool MakePhysical(ChunkData data)
+	{
+		if(!data.empty)
+		{
+			Vector3 newPos = new Vector3(data.pos.x, data.pos.y, data.pos.z);
+			GameObject newChunkObject = Instantiate(chunkPrefab, newPos, Quaternion.Euler(Vector3.zero)) as GameObject;
+			Chunk newChunk = newChunkObject.GetComponent<Chunk>();
+			data.chunk = newChunk;
+			newChunk.data = data;
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Get the chunk holding data at the given coords.
 	 **/
-	public Chunk GetChunk(int x, int y, int z)
+	public ChunkData GetChunk(int x, int y, int z)
 	{
 		WorldPos pos = new WorldPos();
-		float multiple = Chunk.chunkSize;
-		pos.x = Mathf.FloorToInt(x / multiple) * Chunk.chunkSize;
-		pos.y = Mathf.FloorToInt(y / multiple) * Chunk.chunkSize;
-		pos.z = Mathf.FloorToInt(z / multiple) * Chunk.chunkSize;
+		float multiple = ChunkData.chunkSize;
+		pos.x = Mathf.FloorToInt(x / multiple) * ChunkData.chunkSize;
+		pos.y = Mathf.FloorToInt(y / multiple) * ChunkData.chunkSize;
+		pos.z = Mathf.FloorToInt(z / multiple) * ChunkData.chunkSize;
 
-		Chunk containerChunk = null;
+		ChunkData containerChunk = null;
 
 		chunks.TryGetValue(pos, out containerChunk);
 
@@ -64,11 +87,14 @@ public class World : MonoBehaviour
 	 **/
 	public void DestroyChunk(int x, int y, int z)
 	{
-		Chunk chunk = null;
+		ChunkData chunk = null;
 		if(chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
 		{
 			UtilSerialization.SaveChunk(chunk);
-			Object.Destroy(chunk.gameObject);
+			if(chunk.chunk != null)
+			{
+				Object.Destroy(chunk.chunk.gameObject);
+			}
 			chunks.Remove(new WorldPos(x, y, z));
 		}
 	}
@@ -78,11 +104,11 @@ public class World : MonoBehaviour
 	 **/
 	public int GetBlock(int x, int y, int z)
 	{
-		Chunk containerChunk = GetChunk(x, y, z);
+		ChunkData chunk = GetChunk(x, y, z);
 
-		if(containerChunk != null)
+		if(chunk != null)
 		{
-			int block = containerChunk.GetBlock(x - containerChunk.pos.x, y - containerChunk.pos.y, z - containerChunk.pos.z);
+			int block = chunk.GetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z);
 
 			return block;
 		}
@@ -98,20 +124,45 @@ public class World : MonoBehaviour
 	 **/
 	public void SetBlock(int x, int y, int z, int id)
 	{
-		Chunk chunk = GetChunk(x, y, z);
+		ChunkData chunk = GetChunk(x, y, z);
 
 		if(chunk != null)
 		{
 			chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, id);
-			chunk.update = true;
+
+			if(chunk.empty && !IsChunkEmpty(chunk))
+			{
+				if(MakePhysical(chunk))
+				{
+					chunk.empty = false;
+				}
+			}
+			else
+			{
+				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, id);
+				chunk.update = true;
+			}
 
 			UpdateIfEqual(x - chunk.pos.x, 0, new WorldPos(x - 1, y, z));
-			UpdateIfEqual(x - chunk.pos.x, Chunk.chunkSize - 1, new WorldPos(x + 1, y, z));
+			UpdateIfEqual(x - chunk.pos.x, ChunkData.chunkSize - 1, new WorldPos(x + 1, y, z));
 			UpdateIfEqual(y - chunk.pos.y, 0, new WorldPos(x, y - 1, z));
-			UpdateIfEqual(y - chunk.pos.y, Chunk.chunkSize - 1, new WorldPos(x, y + 1, z));
+			UpdateIfEqual(y - chunk.pos.y, ChunkData.chunkSize - 1, new WorldPos(x, y + 1, z));
 			UpdateIfEqual(z - chunk.pos.z, 0, new WorldPos(x, y, z - 1));
-			UpdateIfEqual(z - chunk.pos.z, Chunk.chunkSize - 1, new WorldPos(x, y, z + 1));
+			UpdateIfEqual(z - chunk.pos.z, ChunkData.chunkSize - 1, new WorldPos(x, y, z + 1));
 		}
+	}
+
+	public bool IsChunkEmpty(ChunkData chunk)
+	{
+		foreach(byte block in chunk.blocks)
+		{
+			if(block > 0)
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -166,7 +217,7 @@ public class World : MonoBehaviour
 		
 		WorldPos pos = GetBlockPos(hit, adjacent);
 		
-		chunk.world.SetBlock(pos.x, pos.y, pos.z, id);
+		chunk.data.world.SetBlock(pos.x, pos.y, pos.z, id);
 		
 		return true;
 	}
@@ -182,7 +233,7 @@ public class World : MonoBehaviour
 		
 		WorldPos pos = GetBlockPos(hit, adjacent);
 		
-		int block = chunk.world.GetBlock(pos.x, pos.y, pos.z);
+		int block = chunk.data.world.GetBlock(pos.x, pos.y, pos.z);
 		
 		return block;
 	}
@@ -194,7 +245,7 @@ public class World : MonoBehaviour
 	{
 		if(valueOne == valueTwo)
 		{
-			Chunk chunk = GetChunk(pos.x, pos.y, pos.z);
+			ChunkData chunk = GetChunk(pos.x, pos.y, pos.z);
 			if(chunk != null)
 			{
 				chunk.update = true;
@@ -204,7 +255,7 @@ public class World : MonoBehaviour
 
 	void OnApplicationQuit()
 	{
-		foreach(KeyValuePair<WorldPos, Chunk> chunk in chunks)
+		foreach(KeyValuePair<WorldPos, ChunkData> chunk in chunks)
 		{
 			if(!chunk.Value.needsSaving){continue;}
 

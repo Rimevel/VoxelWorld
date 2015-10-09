@@ -94,7 +94,7 @@ public class MeshData
 	/**
 	 * Assemble an upwards facing face.
 	 **/
-	public static MeshData CreateFaceUp(Chunk chunk, int x, int y, int z, Block block, MeshData meshData, float size)
+	public static MeshData CreateFaceUp(ChunkData chunk, int x, int y, int z, Block block, MeshData meshData, float size)
 	{
 		meshData.AddVertex(new Vector3(x - size, y + size, z + size));
 		meshData.AddVertex(new Vector3(x + size, y + size, z + size));
@@ -111,7 +111,7 @@ public class MeshData
 	/**
 	 * Assemble a downwards facing face.
 	 **/
-	public static MeshData CreateFaceDown(Chunk chunk, int x, int y, int z, Block block, MeshData meshData, float size)
+	public static MeshData CreateFaceDown(ChunkData chunk, int x, int y, int z, Block block, MeshData meshData, float size)
 	{
 		meshData.AddVertex(new Vector3(x - size, y - size, z - size));
 		meshData.AddVertex(new Vector3(x + size, y - size, z - size));
@@ -128,7 +128,7 @@ public class MeshData
 	/**
 	 * Assemble a north facing face.
 	 **/
-	public static MeshData CreateFaceNorth(Chunk chunk, int x, int y, int z, Block block, MeshData meshData, float size)
+	public static MeshData CreateFaceNorth(ChunkData chunk, int x, int y, int z, Block block, MeshData meshData, float size)
 	{
 		meshData.AddVertex(new Vector3(x + size, y - size, z + size));
 		meshData.AddVertex(new Vector3(x + size, y + size, z + size));
@@ -145,7 +145,7 @@ public class MeshData
 	/**
 	 * Assemble a south facing face.
 	 **/
-	public static MeshData CreateFaceSouth(Chunk chunk, int x, int y, int z, Block block, MeshData meshData, float size)
+	public static MeshData CreateFaceSouth(ChunkData chunk, int x, int y, int z, Block block, MeshData meshData, float size)
 	{
 		meshData.AddVertex(new Vector3(x - size, y - size, z - size));
 		meshData.AddVertex(new Vector3(x - size, y + size, z - size));
@@ -162,7 +162,7 @@ public class MeshData
 	/**
 	 * Assemble an east facing face.
 	 **/
-	public static MeshData CreateFaceEast(Chunk chunk, int x, int y, int z, Block block, MeshData meshData, float size)
+	public static MeshData CreateFaceEast(ChunkData chunk, int x, int y, int z, Block block, MeshData meshData, float size)
 	{
 		meshData.AddVertex(new Vector3(x + size, y - size, z - size));
 		meshData.AddVertex(new Vector3(x + size, y + size, z - size));
@@ -179,7 +179,7 @@ public class MeshData
 	/**
 	 * Assemble a west facing face.
 	 **/
-	public static MeshData CreateFaceWest(Chunk chunk, int x, int y, int z, Block block, MeshData meshData, float size)
+	public static MeshData CreateFaceWest(ChunkData chunk, int x, int y, int z, Block block, MeshData meshData, float size)
 	{
 		meshData.AddVertex(new Vector3(x - size, y - size, z + size));
 		meshData.AddVertex(new Vector3(x - size, y + size, z + size));
