@@ -132,9 +132,10 @@ public class World : MonoBehaviour
 
 			if(chunk.empty && !IsChunkEmpty(chunk))
 			{
+				chunk.empty = false;
 				if(MakePhysical(chunk))
 				{
-					chunk.empty = false;
+					chunk.update = true;
 				}
 			}
 			else
