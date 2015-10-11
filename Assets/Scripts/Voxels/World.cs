@@ -7,6 +7,9 @@ public class World : MonoBehaviour
 	public Dictionary<WorldPos, ChunkData> chunks = new Dictionary<WorldPos, ChunkData>();
 	public GameObject chunkPrefab;
 
+	public SimplexNoise.Noise noise;
+	public TerrainGen terrainGen;
+
 	public string worldName = "world";
 
 	void Start()
@@ -16,6 +19,9 @@ public class World : MonoBehaviour
 		Cursor.visible = false;
 		//Load all blocks.
 		new Blocks();
+		//Start the terrain generator.
+		noise = new SimplexNoise.Noise();
+		terrainGen = new TerrainGen(noise);
 	}
 
 	/**
@@ -34,7 +40,6 @@ public class World : MonoBehaviour
 
 		if(!UtilSerialization.LoadChunk(data))
 		{
-			var terrainGen = new TerrainGen();
 			data = terrainGen.ChunkGen(data);
 			MakePhysical(data);
 			return;

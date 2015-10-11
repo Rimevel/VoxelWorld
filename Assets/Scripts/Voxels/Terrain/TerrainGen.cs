@@ -3,72 +3,143 @@ using System.Collections;
 
 public class TerrainGen
 {
-	float stoneBaseHeight = -24;
-	float stoneBaseNoise = 0.015f;
-	float stoneBaseNoiseHeight = 4;
+	protected int stoneBaseHeight = -20;
+	protected float stoneBaseNoise = 0.03f;
+	protected int stoneBaseNoiseHeight = 10;
+	
+	protected int stoneMountainHeight = 10;
+	protected float stoneMountainFrequency = 0.008f;
+	protected int stoneMinHeight = 0;
+	
+	protected int dirtBaseHeight = 1;
+	protected float dirtNoise = 0.04f;
+	protected int dirtNoiseHeight = 2;
 
-	float stoneMountainHeight = 48;
-	float stoneMountainFrequency = 0.08f;
-	float stoneMinHeight = -12;
-
-	float dirtBaseHeight = 1;
-	float dirtNoise = 0.04f;
-	float dirtNoiseHeight = 3;
-
-	public ChunkData ChunkGen(ChunkData chunk)
+	public TerrainGen(SimplexNoise.Noise noise)
 	{
-		for(int x = chunk.pos.x; x < chunk.pos.x + ChunkData.chunkSize; x++)
+		noiseGen = noise;
+		//treeStructure = new StructureTree();
+	}
+	
+	SimplexNoise.Noise noiseGen;
+	TerrainGen terrainGen;
+
+	public virtual ChunkData ChunkGen(ChunkData chunk)
+	{
+		for (int x = 0; x < ChunkData.chunkSize; x++)
 		{
-			for(int z = chunk.pos.z; z < chunk.pos.z + ChunkData.chunkSize; z++)
+			for (int z = 0; z < ChunkData.chunkSize; z++)
 			{
-				chunk = ChunkColumnGen(chunk, x, z);
+				chunk = GenerateTerrain(chunk, x, z);
+			}
+		}
+		
+		for (int x = -3; x < ChunkData.chunkSize + 3; x++)
+		{
+			for (int z = -3; z < ChunkData.chunkSize + 3; z++)
+			{
+				//CreateTreeIfValid(x, z, chunk);
 			}
 		}
 
 		return chunk;
 	}
-
-	public static int GetNoise(int x, int y, int z, float scale, int max)
+	
+	protected virtual int LayerStoneBase(int x, int z)
 	{
-		return Mathf.FloorToInt((Noise.Generate(x * scale, y * scale, z * scale) + 1f) + (max / 2f));
+		int stoneHeight = stoneBaseHeight;
+		stoneHeight += GetNoise(x, 0, z, stoneMountainFrequency, stoneMountainHeight, 1.6f);
+		stoneHeight += GetNoise(x, 1000, z, 0.03f, 8, 1) * 2;
+		
+		if (stoneHeight < stoneMinHeight)
+			return stoneMinHeight;
+		
+		return stoneHeight;
+	}
+	
+	protected virtual int LayerStoneNoise(int x, int z)
+	{
+		return GetNoise(x, 0, z, stoneBaseNoise, stoneBaseNoiseHeight, 1);
+	}
+	
+	protected virtual int LayerDirt(int x, int z)
+	{
+		int dirtHeight = dirtBaseHeight;
+		dirtHeight += GetNoise(x, 100, z, dirtNoise, dirtNoiseHeight, 1);
+		
+		return dirtHeight;
 	}
 
-	public ChunkData ChunkColumnGen(ChunkData chunk, int x, int z)
+	protected virtual ChunkData GenerateTerrain(ChunkData chunk, int x, int z)
 	{
 		bool empty = true;
-		int stoneHeight = Mathf.FloorToInt(stoneBaseHeight);
-		stoneHeight += GetNoise(x, 0, z, stoneMountainFrequency, Mathf.FloorToInt(stoneMountainHeight));
-
-		if(stoneHeight < stoneMinHeight)
+		int stoneHeight = LayerStoneBase(chunk.pos.x + x, chunk.pos.z + z);
+		stoneHeight += LayerStoneNoise(chunk.pos.x + x, chunk.pos.z + z);
+		
+		int dirtHeight = stoneHeight + LayerDirt(chunk.pos.x + x, chunk.pos.z + z);
+		//CreateTreeIfValid(x, z, chunk, dirtHeight);
+		
+		for (int y = 0; y < ChunkData.chunkSize; y++)
 		{
-			stoneHeight = Mathf.FloorToInt(stoneMinHeight);
-		}
-
-		stoneHeight += GetNoise(x, 0, z, stoneBaseNoise, Mathf.FloorToInt(stoneBaseNoiseHeight));
-
-		int dirtHeight = stoneHeight + Mathf.FloorToInt(dirtBaseHeight);
-		dirtHeight += GetNoise(x, 100, z, dirtNoise, Mathf.FloorToInt(dirtNoiseHeight));
-
-		for(int y = chunk.pos.y; y < chunk.pos.y + ChunkData.chunkSize; y++)
-		{
-			if(y <= stoneHeight)
+			
+			if (y + chunk.pos.y <= stoneHeight)
 			{
-				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, 1);
-				if(empty){empty = false;}
+				SetBlock(chunk, 1, new WorldPos(x, y, z));
+				empty = false;
 			}
-			else if(y <= dirtHeight)
+			else if (y + chunk.pos.y < dirtHeight)
 			{
-				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, 2);
-				if(empty){empty = false;}
+				SetBlock(chunk, 3, new WorldPos(x, y, z));
+				empty = false;
+			}
+			else if (y + chunk.pos.y == dirtHeight)
+			{
+				SetBlock(chunk, 2, new WorldPos(x, y, z));
+				empty = false;
 			}
 			else
 			{
-				chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, 0);
+				SetBlock(chunk, 0, new WorldPos(x, y, z));
 			}
-		}
 
-		chunk.empty = empty;
+			chunk.empty = empty;
+		}
 
 		return chunk;
 	}
+	
+	public static void SetBlock(ChunkData chunk, int blockId, WorldPos pos, bool replaceBlocks = false)
+	{
+		if (ChunkData.InRange(pos.x) && ChunkData.InRange(pos.y) && ChunkData.InRange(pos.z))
+		{
+			if (replaceBlocks || chunk.GetBlock(pos.x, pos.y, pos.z) == 0)
+			{
+				chunk.SetBlock(pos.x, pos.y, pos.z, blockId);
+			}
+		}
+	}
+	
+	public int GetNoise(int x, int y, int z, float scale, int max, float power)
+	{
+		float noise = (noiseGen.Generate(x * scale, y * scale, z * scale) + 1f) * (max / 2f);
+		
+		noise = Mathf.Pow(noise, power);
+		
+		return Mathf.FloorToInt(noise);
+	}
+	
+//	void CreateTreeIfValid(int x, int z, Chunk chunk)
+//	{
+//		if (GetNoise(x + chunk.pos.x, -10000, z + chunk.pos.z, 100, 100, 1) < 10)
+//		{
+//			if (GetNoise(x + chunk.pos.x, 10000, z + chunk.pos.z, 100, 100, 1) < 15)
+//			{
+//				int terrainHeight = LayerStoneBase(x + chunk.pos.x, z + chunk.pos.z);
+//				terrainHeight += LayerStoneNoise(x + chunk.pos.x, z + chunk.pos.z);
+//				terrainHeight += LayerDirt(x + chunk.pos.x, z + chunk.pos.z);
+//				
+//				treeStructure.OldBuild(chunk.world, chunk.pos, new BlockPos(x, terrainHeight - chunk.pos.y, z), this);
+//			}
+//		}
+//	}
 }
