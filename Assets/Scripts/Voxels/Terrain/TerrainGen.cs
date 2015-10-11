@@ -24,8 +24,13 @@ public class TerrainGen
 	SimplexNoise.Noise noiseGen;
 	TerrainGen terrainGen;
 
+	/**
+	 * Generate data for the given ChunkData object.
+	 **/
 	public virtual ChunkData ChunkGen(ChunkData chunk)
 	{
+		chunk.empty = true;
+
 		for (int x = 0; x < ChunkData.chunkSize; x++)
 		{
 			for (int z = 0; z < ChunkData.chunkSize; z++)
@@ -44,7 +49,10 @@ public class TerrainGen
 
 		return chunk;
 	}
-	
+
+	/**
+	 * Get the thickness of the base stone layer.
+	 **/
 	protected virtual int LayerStoneBase(int x, int z)
 	{
 		int stoneHeight = stoneBaseHeight;
@@ -56,12 +64,18 @@ public class TerrainGen
 		
 		return stoneHeight;
 	}
-	
+
+	/**
+	 * Get the thickness of the top stone layer.
+	 **/
 	protected virtual int LayerStoneNoise(int x, int z)
 	{
 		return GetNoise(x, 0, z, stoneBaseNoise, stoneBaseNoiseHeight, 1);
 	}
-	
+
+	/**
+	 * Get the thickness of the dirt layer.
+	 **/
 	protected virtual int LayerDirt(int x, int z)
 	{
 		int dirtHeight = dirtBaseHeight;
@@ -70,9 +84,11 @@ public class TerrainGen
 		return dirtHeight;
 	}
 
+	/**
+	 * Generate a column of blocks in the given 2d coords inside the given ChunkData.
+	 **/
 	protected virtual ChunkData GenerateTerrain(ChunkData chunk, int x, int z)
 	{
-		bool empty = true;
 		int stoneHeight = LayerStoneBase(chunk.pos.x + x, chunk.pos.z + z);
 		stoneHeight += LayerStoneNoise(chunk.pos.x + x, chunk.pos.z + z);
 		
@@ -81,34 +97,31 @@ public class TerrainGen
 		
 		for (int y = 0; y < ChunkData.chunkSize; y++)
 		{
-			
 			if (y + chunk.pos.y <= stoneHeight)
 			{
 				SetBlock(chunk, 1, new WorldPos(x, y, z));
-				empty = false;
+				if(chunk.empty){chunk.empty = false;}
 			}
 			else if (y + chunk.pos.y < dirtHeight)
 			{
 				SetBlock(chunk, 3, new WorldPos(x, y, z));
-				empty = false;
+				if(chunk.empty){chunk.empty = false;}
 			}
 			else if (y + chunk.pos.y == dirtHeight)
 			{
 				SetBlock(chunk, 2, new WorldPos(x, y, z));
-				empty = false;
+				if(chunk.empty){chunk.empty = false;}
 			}
 			else
 			{
 				SetBlock(chunk, 0, new WorldPos(x, y, z));
 			}
-
-			chunk.empty = empty;
 		}
 
 		return chunk;
 	}
 	
-	public static void SetBlock(ChunkData chunk, int blockId, WorldPos pos, bool replaceBlocks = false)
+	void SetBlock(ChunkData chunk, int blockId, WorldPos pos, bool replaceBlocks = false)
 	{
 		if (ChunkData.InRange(pos.x) && ChunkData.InRange(pos.y) && ChunkData.InRange(pos.z))
 		{
