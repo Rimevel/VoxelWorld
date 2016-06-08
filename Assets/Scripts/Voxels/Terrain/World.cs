@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using VoxelWorld.Rendering;
+using VoxelWorld.Terrain.Generation;
 
 namespace VoxelWorld.Terrain
 {
@@ -13,9 +14,10 @@ public class World : MonoBehaviour
 {
 	/** Dictionary of all the chunks in this world. */
 	public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>();
+	/** Universal prefab for the structure of a single chunk. */
 	public GameObject chunkPrefab;
 	/** The current terrain noise used. */
-	public SimplexNoise.Noise noise;
+	public Noise noise;
 	/** Terrain generator handling the creation of terrain. */
 	public TerrainGen terrainGen;
 
@@ -30,7 +32,7 @@ public class World : MonoBehaviour
 		//Load all blocks.
 		new BlockList();
 		//Start the terrain generator.
-		noise = new SimplexNoise.Noise();
+		noise = new Noise();
 		terrainGen = new TerrainGen(noise);
 	}
 
