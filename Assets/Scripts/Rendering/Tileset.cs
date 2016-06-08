@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-namespace VoxelWorld.Textures
+namespace VoxelWorld.Rendering
 {
 
 /**
@@ -80,7 +80,9 @@ public class Tileset
 			}
 		}
 
-		int currentTile, tileX, tileY = 0;
+		int currentTile = 0;
+		int tileX = 0;
+		int tileY = 0;
 
 		//Loop through all the textures and slot them into the tileset texture.
 		foreach(Texture2D tex in textures)
