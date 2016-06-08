@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using VoxelWorld.Terrain;
+
+namespace VoxelWorld.Player
+{
 
 [RequireComponent(typeof(CharacterController))]
 public class CharacterScript : MonoBehaviour
@@ -15,7 +19,7 @@ public class CharacterScript : MonoBehaviour
 
 	static private int health = 3 ;
 	static private float timeLeft = 0f;
-	
+
 	private float mY = 0f;
 
 	private Vector3 moveDirection = Vector3.zero;
@@ -25,7 +29,7 @@ public class CharacterScript : MonoBehaviour
 	{
 
 	}
-	
+
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
@@ -71,4 +75,6 @@ public class CharacterScript : MonoBehaviour
 		moveDirection.y -= gravity * Time.deltaTime;
 		controller.Move(moveDirection * Time.deltaTime);
 	}
+}
+
 }

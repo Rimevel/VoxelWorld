@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using VoxelWorld.Terrain;
+
+namespace VoxelWorld.Rendering
+{
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
-
-public class Chunk : MonoBehaviour
+public class ChunkRenderer : MonoBehaviour
 {
-	public ChunkData data;
+	public Chunk chunk;
 
 	MeshFilter filter;
 	MeshCollider coll;
@@ -20,10 +23,10 @@ public class Chunk : MonoBehaviour
 
 	void Update()
 	{
-		if(data.update)
+		if(chunk.update)
 		{
-			data.update = false;
-			data.UpdateChunk();
+			chunk.update = false;
+			chunk.UpdateChunk();
 		}
 	}
 
@@ -36,16 +39,18 @@ public class Chunk : MonoBehaviour
 		filter.mesh.Clear();
 		filter.mesh.vertices = meshData.vertices.ToArray();
 		filter.mesh.triangles = meshData.triangles.ToArray();
-		
+
 		filter.mesh.uv = meshData.uv.ToArray();
 		filter.mesh.RecalculateNormals();
-		
+
 		coll.sharedMesh = null;
 		Mesh mesh = new Mesh();
 		mesh.vertices = meshData.colVertices.ToArray();
 		mesh.triangles = meshData.colTriangles.ToArray();
 		mesh.RecalculateNormals();
-		
+
 		coll.sharedMesh = mesh;
 	}
+}
+
 }

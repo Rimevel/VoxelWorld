@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using VoxelWorld.Terrain;
+
+namespace VoxelWorld.Player
+{
 
 public class Modify : MonoBehaviour
 {
@@ -24,4 +28,6 @@ public class Modify : MonoBehaviour
 		transform.position += transform.forward * 1 * Input.GetAxis("Vertical");
 		transform.position += transform.right * 1 * Input.GetAxis("Horizontal");
 	}
+}
+
 }

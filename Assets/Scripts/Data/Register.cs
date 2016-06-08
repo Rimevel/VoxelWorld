@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using VoxelWorld.Blocks;
 
 /**
- * Registry handling access and storage of blocks and other "hard" game data.
+ * Registry handling access and storage of persistent game data.
  **/
 public class Register
 {

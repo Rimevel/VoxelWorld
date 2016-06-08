@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using VoxelWorld.Terrain;
+using VoxelWorld.Rendering;
+
+namespace VoxelWorld.Blocks
+{
 
 public class BlockAir : Block
 {
@@ -9,7 +14,7 @@ public class BlockAir : Block
 
 	}
 
-	public override MeshData GetBlockMesh (ChunkData chunk, int x, int y, int z, MeshData meshData)
+	public override MeshData GetBlockMesh (Chunk chunk, int x, int y, int z, MeshData meshData)
 	{
 		return meshData;
 	}
@@ -18,4 +23,6 @@ public class BlockAir : Block
 	{
 		return false;
 	}
+}
+
 }

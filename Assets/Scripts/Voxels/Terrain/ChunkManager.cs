@@ -1,7 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using VoxelWorld.Terrain;
 
+namespace VoxelWorld.Terrain
+{
+
+/**
+ * Handles loading of chunks around a point.
+ */
 public class ChunkManager : MonoBehaviour
 {
 	public World world;
@@ -66,36 +73,36 @@ public class ChunkManager : MonoBehaviour
 	void FindChunksToLoad()
 	{
 		WorldPos playerPos = new WorldPos();
-		playerPos.x = Mathf.FloorToInt(transform.position.x / ChunkData.chunkSize) * ChunkData.chunkSize;
-		playerPos.y = Mathf.FloorToInt(transform.position.y / ChunkData.chunkSize) * ChunkData.chunkSize;
-		playerPos.z = Mathf.FloorToInt(transform.position.z / ChunkData.chunkSize) * ChunkData.chunkSize;
+		playerPos.x = Mathf.FloorToInt(transform.position.x / Chunk.chunkSize) * Chunk.chunkSize;
+		playerPos.y = Mathf.FloorToInt(transform.position.y / Chunk.chunkSize) * Chunk.chunkSize;
+		playerPos.z = Mathf.FloorToInt(transform.position.z / Chunk.chunkSize) * Chunk.chunkSize;
 
 		if(updateList.Count == 0)
 		{
 			for(int i = 0; i < chunkPositions.Length; i++)
 			{
 				WorldPos newChunkPos = new WorldPos();
-				newChunkPos.x = chunkPositions[i].x * ChunkData.chunkSize + playerPos.x;
+				newChunkPos.x = chunkPositions[i].x * Chunk.chunkSize + playerPos.x;
 				newChunkPos.y = 0;
-				newChunkPos.z = chunkPositions[i].z * ChunkData.chunkSize + playerPos.z;
+				newChunkPos.z = chunkPositions[i].z * Chunk.chunkSize + playerPos.z;
 
-				ChunkData data = world.GetChunk(newChunkPos.x, newChunkPos.y, newChunkPos.z);
+				Chunk chunk = world.GetChunk(newChunkPos.x, newChunkPos.y, newChunkPos.z);
 
-				if(data != null && (data.rendered || updateList.Contains(newChunkPos)))
+				if(chunk != null && (chunk.wasRendered || updateList.Contains(newChunkPos)))
 				{
 					continue;
 				}
 
 				for(int y = -4; y < 4; y++)
 				{
-					for (int x = newChunkPos.x - ChunkData.chunkSize; x <= newChunkPos.x + ChunkData.chunkSize; x += ChunkData.chunkSize)
+					for (int x = newChunkPos.x - Chunk.chunkSize; x <= newChunkPos.x + Chunk.chunkSize; x += Chunk.chunkSize)
 					{
-						for (int z = newChunkPos.z - ChunkData.chunkSize; z <= newChunkPos.z + ChunkData.chunkSize; z += ChunkData.chunkSize)
+						for (int z = newChunkPos.z - Chunk.chunkSize; z <= newChunkPos.z + Chunk.chunkSize; z += Chunk.chunkSize)
 						{
-							buildList.Add(new WorldPos(x, y * ChunkData.chunkSize, z));
+							buildList.Add(new WorldPos(x, y * Chunk.chunkSize, z));
 						}
 					}
-					updateList.Add(new WorldPos(newChunkPos.x, y * ChunkData.chunkSize, newChunkPos.z));
+					updateList.Add(new WorldPos(newChunkPos.x, y * Chunk.chunkSize, newChunkPos.z));
 				}
 
 				return;
@@ -126,7 +133,7 @@ public class ChunkManager : MonoBehaviour
 
 		if(updateList.Count != 0)
 		{
-			ChunkData chunk = world.GetChunk(updateList[0].x, updateList[0].y, updateList[0].z);
+			Chunk chunk = world.GetChunk(updateList[0].x, updateList[0].y, updateList[0].z);
 			if (chunk != null)
 			{
 				chunk.update = true;
@@ -164,4 +171,6 @@ public class ChunkManager : MonoBehaviour
 		timer++;
 		return false;
 	}
+}
+
 }

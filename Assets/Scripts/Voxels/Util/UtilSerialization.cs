@@ -4,6 +4,8 @@ using System.IO;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using VoxelWorld.Terrain;
+using VoxelWorld.Util;
 
 public static class UtilSerialization
 {
@@ -36,7 +38,7 @@ public static class UtilSerialization
 	/**
 	 * Save and serialize a chunk.
 	 **/
-	public static void SaveChunk(ChunkData chunk)
+	public static void SaveChunk(Chunk chunk)
 	{
 		Save save = new Save(chunk);
 		if(save.empty)
@@ -56,7 +58,7 @@ public static class UtilSerialization
 	/**
 	 * Unserialize and load a chunk.
 	 **/
-	public static bool LoadChunk(ChunkData chunk)
+	public static bool LoadChunk(Chunk chunk)
 	{
 		string saveFile = SaveLocation(chunk.world.worldName);
 		saveFile += FileName(chunk.pos);

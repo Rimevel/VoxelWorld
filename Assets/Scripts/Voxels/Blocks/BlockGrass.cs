@@ -2,6 +2,9 @@
 using System.Collections;
 using System;
 
+namespace VoxelWorld.Blocks
+{
+
 public class BlockGrass : Block
 {
 	public BlockGrass(int id) : base(id)
@@ -16,13 +19,13 @@ public class BlockGrass : Block
 		switch(direction)
 		{
 			case Direction.UP:
-				tile.x = 2;
-				tile.y = 0;
-				return tile;
+			tile.x = 2;
+			tile.y = 0;
+			return tile;
 			case Direction.DOWN:
-				tile.x = 1;
-				tile.y = 0;
-				return tile;
+			tile.x = 1;
+			tile.y = 0;
+			return tile;
 		}
 
 		tile.x = 3;
@@ -30,4 +33,6 @@ public class BlockGrass : Block
 
 		return tile;
 	}
+}
+
 }

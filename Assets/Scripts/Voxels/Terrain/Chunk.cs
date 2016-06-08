@@ -1,28 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
+using VoxelWorld.Terrain;
+using VoxelWorld.Rendering;
 
-public class ChunkData
+namespace VoxelWorld.Terrain
+{
+
+/**
+ * One chunk of terrain containing a cubic slice of the world.
+ */
+public class Chunk
 {
 	public byte[ , , ] blocks = new byte[chunkSize, chunkSize, chunkSize];
 	public byte[ , , ] meta = new byte[chunkSize, chunkSize, chunkSize];
 
-	//How many cubic blocks is a chunk?
+	/** How many cubic blocks is a chunk? */
 	public static int chunkSize = 16;
 
-	//The world this chunk belong to.
+	/** The world this chunk belong to. */
 	public World world;
-	//World position of this chunk.
+	/** World position of this chunk. */
 	public WorldPos pos;
-	//The chunk this data is bound to.
-	public Chunk chunk;
+	/** The renderer this data is bound to. */
+	public ChunkRenderer renderer;
 
-	//If set to true the chunk will update.
+	/** If set to true the chunk will update. */
 	public bool update = false;
-	//Is this chunk empty?
+	/** Is this chunk empty? */
 	public bool empty = false;
-	//Has the chunk been rendered yet?
-	public bool rendered;
-	//Have this chunk been modified and needs to be saved?
+	/** Has the chunk been rendered yet? */
+	public bool wasRendered;
+	/** Have this chunk been modified and needs to be saved? */
 	public bool needsSaving;
 
 	/**
@@ -35,10 +43,10 @@ public class ChunkData
 		{
 			return (int)blocks[x, y, z];
 		}
-		
+
 		return world.GetBlock(pos.x + x, pos.y + y, pos.z + z);
 	}
-	
+
 	/**
 	 * Set the block at the specified coords inside the chunk.
 	 * Use World.SetBlock() instead in most cases!
@@ -56,7 +64,7 @@ public class ChunkData
 			needsSaving = true;
 		}
 	}
-	
+
 	/**
 	 * Check if the index value is within the min and max values of a chunk.
 	 **/
@@ -66,19 +74,19 @@ public class ChunkData
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Update the the linked chunk based on the the data.
 	 **/
 	public void UpdateChunk()
 	{
-		rendered = true;
-		
+		wasRendered = true;
+
 		MeshData meshData = new MeshData();
-		
+
 		for(int x = 0; x < chunkSize; x++)
 		{
 			for(int y = 0; y < chunkSize; y++)
@@ -89,7 +97,9 @@ public class ChunkData
 				}
 			}
 		}
-		
-		chunk.RenderMesh(meshData);
+
+		renderer.RenderMesh(meshData);
 	}
+}
+
 }
