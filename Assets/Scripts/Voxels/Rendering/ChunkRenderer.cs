@@ -40,16 +40,15 @@ public class ChunkRenderer : MonoBehaviour
 		filter.mesh.vertices = meshData.vertices.ToArray();
 		filter.mesh.triangles = meshData.triangles.ToArray();
 
+		Mesh collMesh = new Mesh();
+		coll.sharedMesh = null;
+		collMesh.vertices = meshData.vertices.ToArray();
+		collMesh.triangles = meshData.triangles.ToArray();
+		collMesh.RecalculateNormals();
+		coll.sharedMesh = collMesh;
+
 		filter.mesh.uv = meshData.uv.ToArray();
 		filter.mesh.RecalculateNormals();
-
-		coll.sharedMesh = null;
-		Mesh mesh = new Mesh();
-		mesh.vertices = meshData.colVertices.ToArray();
-		mesh.triangles = meshData.colTriangles.ToArray();
-		mesh.RecalculateNormals();
-
-		coll.sharedMesh = mesh;
 	}
 }
 

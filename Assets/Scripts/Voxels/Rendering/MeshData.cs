@@ -12,21 +12,34 @@ namespace VoxelWorld.Rendering
  **/
 public class MeshData
 {
-	public List<Vector3> vertices = new List<Vector3>();
-	public List<int> triangles = new List<int>();
-	public List<Vector2> uv = new List<Vector2>();
+	/** List of all vertices in this mesh. */
+	public List<Vector3> vertices {get; private set;}
+	/** List of all triangles in this mesh. */
+	public List<int> triangles {get; private set;}
+	/** List of all uv points in this mesh. */
+	public List<Vector2> uv {get; private set;}
+	/** List of all vertice colors in this mesh. */
+	public List<Color32> colors {get; private set;}
 
-	public List<Vector3> colVertices = new List<Vector3>();
-	public List<int> colTriangles = new List<int>();
+	/** Generate vertice colors for all vertices? */
+	public bool useVerticeColors;
 
-	public bool useRenderDataForCol;
-
-	public MeshData(){}
+	public MeshData()
+	{
+		/** List of all vertices in this mesh. */
+		vertices = new List<Vector3>();
+		/** List of all triangles in this mesh. */
+		triangles = new List<int>();
+		/** List of all uv points in this mesh. */
+		uv = new List<Vector2>();
+		/** List of all vertice colors in this mesh. */
+		colors = new List<Color32>();
+	}
 
 	/**
 	 * Create a quad from the latest vertice data and add it to the mesh.
 	 * Also handles quad generation for collision if enabled.
-	 **/
+	 */
 	public void AddQuadTriangles()
 	{
 		triangles.Add(vertices.Count - 4);
@@ -36,17 +49,6 @@ public class MeshData
 		triangles.Add(vertices.Count - 4);
 		triangles.Add(vertices.Count - 2);
 		triangles.Add(vertices.Count - 1);
-
-		if(useRenderDataForCol)
-		{
-			colTriangles.Add(colVertices.Count - 4);
-			colTriangles.Add(colVertices.Count - 3);
-			colTriangles.Add(colVertices.Count - 2);
-
-			colTriangles.Add(colVertices.Count - 4);
-			colTriangles.Add(colVertices.Count - 2);
-			colTriangles.Add(colVertices.Count - 1);
-		}
 	}
 
 	/**
@@ -56,11 +58,6 @@ public class MeshData
 	public void AddVertex(Vector3 vertex)
 	{
 		vertices.Add(vertex);
-
-		if(useRenderDataForCol)
-		{
-			colVertices.Add(vertex);
-		}
 	}
 
 	/**
@@ -70,11 +67,6 @@ public class MeshData
 	public void AddTriangle(int tri)
 	{
 		triangles.Add(tri);
-
-		if(useRenderDataForCol)
-		{
-			colTriangles.Add(tri - (vertices.Count - colVertices.Count));
-		}
 	}
 
 	/**

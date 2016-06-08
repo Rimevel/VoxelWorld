@@ -28,8 +28,6 @@ public class Block
 	 **/
 	public virtual MeshData GetBlockMesh(Chunk chunk, int x, int y, int z, MeshData meshData)
 	{
-		meshData.useRenderDataForCol = true;
-
 		if(!Register.GetBlockById(chunk.GetBlock(x, y + 1, z)).IsSolid(Direction.UP))
 		{
 			meshData = MeshData.CreateFaceUp(chunk, x, y, z, this, meshData, 0.5f);
