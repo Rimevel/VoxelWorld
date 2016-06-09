@@ -24,14 +24,7 @@ public class CharacterScript : MonoBehaviour
 
 	private Vector3 moveDirection = Vector3.zero;
 
-	// Use this for initialization
-	void Start ()
-	{
-
-	}
-
-	// Update is called once per frame
-	void FixedUpdate ()
+	void FixedUpdate()
 	{
 		CharacterController controller = GetComponent<CharacterController>();
 		Camera cam = GetComponentInChildren<Camera>();

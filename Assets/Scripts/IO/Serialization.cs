@@ -7,9 +7,12 @@ using System.Runtime.Serialization;
 using VoxelWorld.Terrain;
 using VoxelWorld.Util;
 
-public static class UtilSerialization
+namespace VoxelWorld.IO
 {
-	public static string saveFolderName = "SaveData";
+
+public static class Serialization
+{
+	private const string saveFolderName = "Saves";
 
 	/**
 	 * Get the static save loctation relative to the games top folder.
@@ -40,7 +43,7 @@ public static class UtilSerialization
 	 **/
 	public static void SaveChunk(Chunk chunk)
 	{
-		Save save = new Save(chunk);
+		ChunkSerialized save = new ChunkSerialized(chunk);
 		if(save.empty)
 		{
 			return;
@@ -71,7 +74,7 @@ public static class UtilSerialization
 		IFormatter formatter = new BinaryFormatter();
 		FileStream stream = new FileStream(saveFile, FileMode.Open);
 
-		Save save = (Save)formatter.Deserialize(stream);
+		ChunkSerialized save = (ChunkSerialized)formatter.Deserialize(stream);
 
 		chunk.blocks = save.blocks;
 		chunk.meta = save.meta;
@@ -80,4 +83,6 @@ public static class UtilSerialization
 
 		return true;
 	}
+}
+
 }

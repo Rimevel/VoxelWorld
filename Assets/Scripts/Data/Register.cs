@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using VoxelWorld.Blocks;
+using VoxelWorld.Rendering;
 
 /**
  * Registry handling access and storage of persistent game data.
  **/
 public class Register
 {
+	/** The global tileset containing all the terrain tiles used to render blocks. */
+	public static Tileset tileset {get; private set;}
+
 	private static Block[] blocks = new Block[256];
 
 	/**
@@ -29,7 +33,7 @@ public class Register
 					blocks[id] = block;
 					return;
 				}
-				else if(id > 255)
+				else if(id > blocks.Length - 1)
 				{
 					Debug.LogError("Block limit reached! No more slots!");
 					return;

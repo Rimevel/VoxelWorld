@@ -4,18 +4,21 @@ using System.Collections.Generic;
 using System;
 using VoxelWorld.Terrain;
 
-namespace VoxelWorld.Util
+namespace VoxelWorld.IO
 {
 
 [Serializable]
-public class Save
+/**
+ * Serial data container for chunk data.
+ */
+public class ChunkSerialized
 {
 	public byte[ , , ] blocks = new byte[Chunk.chunkSize, Chunk.chunkSize, Chunk.chunkSize];
 	public byte[ , , ] meta = new byte[Chunk.chunkSize, Chunk.chunkSize, Chunk.chunkSize];
 	[NonSerialized]
 	public bool empty = false;
 
-	public Save(Chunk chunk)
+	public ChunkSerialized(Chunk chunk)
 	{
 		if(chunk == null || chunk.empty == true){empty = true; return;}
 

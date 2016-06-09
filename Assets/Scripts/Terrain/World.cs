@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using VoxelWorld.Rendering;
 using VoxelWorld.Terrain.Generation;
+using VoxelWorld.IO;
 
 namespace VoxelWorld.Terrain
 {
@@ -42,7 +43,7 @@ public class World : MonoBehaviour
 		{
 			if(!chunk.Value.needsSaving){continue;}
 
-			UtilSerialization.SaveChunk(chunk.Value);
+			Serialization.SaveChunk(chunk.Value);
 		}
 	}
 
@@ -58,7 +59,7 @@ public class World : MonoBehaviour
 
 		chunks.Add(pos, chunk);
 
-		if(!UtilSerialization.LoadChunk(chunk))
+		if(!Serialization.LoadChunk(chunk))
 		{
 			chunk = terrainGen.ChunkGen(chunk);
 			MakePhysical(chunk);
@@ -125,7 +126,7 @@ public class World : MonoBehaviour
 		Chunk chunk = null;
 		if(chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
 		{
-			UtilSerialization.SaveChunk(chunk);
+			Serialization.SaveChunk(chunk);
 			if(chunk.renderer != null)
 			{
 				Object.Destroy(chunk.renderer.gameObject);
