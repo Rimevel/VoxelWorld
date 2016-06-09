@@ -12,23 +12,6 @@ namespace VoxelWorld.IO
 
 public static class Serialization
 {
-	private const string saveFolderName = "Saves";
-
-	/**
-	 * Get the static save loctation relative to the games top folder.
-	 **/
-	public static string SaveLocation(String worldName)
-	{
-		string saveLocation = saveFolderName + "/" + worldName + "/";
-
-		if(!Directory.Exists(saveLocation));
-		{
-			Directory.CreateDirectory(saveLocation);
-		}
-
-		return saveLocation;
-	}
-
 	/**
 	 * Get a file name for a chunk with the given WorldPos.
 	 **/
@@ -49,7 +32,7 @@ public static class Serialization
 			return;
 		}
 
-		string saveFile = SaveLocation(chunk.world.worldName);
+		string saveFile = FileManager.SaveLocation(chunk.world.worldName);
 		saveFile += FileName(chunk.pos);
 
 		IFormatter formatter = new BinaryFormatter();
