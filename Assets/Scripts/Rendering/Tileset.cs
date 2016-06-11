@@ -96,7 +96,7 @@ public class Tileset
 			{
 				for(int x = 0; x < tileSize; x++)
 				{
-					texture.SetPixel(tileX + x, tileY + y, textures[currentTile].GetPixel(x, y));
+					texture.SetPixel(tileX + x, tileY + y, tex.GetPixel(x, y));
 				}
 			}
 
@@ -110,9 +110,6 @@ public class Tileset
 				tileX = 0;
 				tileY++;
 			}
-
-			//Increment the time counter by one.
-			currentTile++;
 		}
 
 		//Apply the texture changes.

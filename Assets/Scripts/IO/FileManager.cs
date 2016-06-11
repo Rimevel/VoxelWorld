@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using VoxelWorld.Terrain;
+
+namespace VoxelWorld.IO
+{
 
 public class FileManager
 {
@@ -18,7 +22,7 @@ public class FileManager
 	{
 		string saveLocation = saveFolderName + "/" + worldName + "/";
 
-		if(!Directory.Exists(saveLocation));
+		if(!Directory.Exists(saveLocation))
 		{
 			Directory.CreateDirectory(saveLocation);
 		}
@@ -33,7 +37,7 @@ public class FileManager
 	{
 		string modLocation = modFolderName + "/" + modName + "/";
 
-		if(!Directory.Exists(modLocation));
+		if(!Directory.Exists(modLocation))
 		{
 			Directory.CreateDirectory(modLocation);
 		}
@@ -48,6 +52,20 @@ public class FileManager
 	{
 		string fileName = chunkLocation.x + "," + chunkLocation.y + "," + chunkLocation.z + ".bin";
 		return fileName;
+	}
+
+	/**
+	 * Get all the file paths in the given folder path.
+	 * Searching for a specific file extension is optional.
+	 */
+	public static string[] GetFilesInFolder(string folderPath, string extension = "")
+	{
+		if(extension != "")
+		{
+			return Directory.GetFiles(folderPath);
+		}
+
+		return Directory.GetFiles(folderPath, "*" + extension, SearchOption.AllDirectories);
 	}
 
 	/**
@@ -93,5 +111,56 @@ public class FileManager
 
 		return tex;
 	}
+
+	/**
+	 * Load a JSON file at the given location and turn it into
+	 * a compatible object of the given type.
+	 */
+	public static T LoadJSON<T>(string filePath)
+	{
+		string fileData;
+
+		if(File.Exists(filePath) && Path.GetExtension(filePath) == ".JSON")
+		{
+			fileData = File.ReadAllText(filePath);
+			return Serialization.DeserializeJson<T>(fileData);
+		}
+
+		//TODO: Might result in errors or bugs?
+		return default(T);
+	}
+
+	/**
+	 * Load a text file at the given location.
+	 */
+	public static string LoadText(string filePath)
+	{
+		string fileData = "";
+
+		if(File.Exists(filePath))
+		{
+			fileData = File.ReadAllText(filePath);
+			return fileData;
+		}
+
+		return fileData;
+	}
+
+	/**
+	 * Save the given chunk to disk.
+	 */
+	public static void SaveChunk(Chunk chunk)
+	{
+		Serialization.SerializeChunk(chunk);
+	}
+
+	/**
+	 * Load any available data for the given chunk.
+	 */
+	public static bool LoadChunk(Chunk chunk)
+	{
+		return Serialization.DeserializeChunk(chunk);
+	}
 }
 
+}

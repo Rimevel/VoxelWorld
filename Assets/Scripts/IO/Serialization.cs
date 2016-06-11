@@ -24,7 +24,7 @@ public static class Serialization
 	/**
 	 * Save and serialize a chunk.
 	 **/
-	public static void SaveChunk(Chunk chunk)
+	public static void SerializeChunk(Chunk chunk)
 	{
 		ChunkSerialized save = new ChunkSerialized(chunk);
 		if(save.empty)
@@ -44,9 +44,9 @@ public static class Serialization
 	/**
 	 * Unserialize and load a chunk.
 	 **/
-	public static bool LoadChunk(Chunk chunk)
+	public static bool DeserializeChunk(Chunk chunk)
 	{
-		string saveFile = SaveLocation(chunk.world.worldName);
+		string saveFile = FileManager.SaveLocation(chunk.world.worldName);
 		saveFile += FileName(chunk.pos);
 
 		if(!File.Exists(saveFile))
@@ -65,6 +65,22 @@ public static class Serialization
 		stream.Close();
 
 		return true;
+	}
+
+	/**
+	 * Deserialize the given string into a compatible given class.
+	 */
+	public static T DeserializeJson<T>(string JSONData)
+	{
+		 return JsonUtility.FromJson<T>(JSONData);
+	}
+
+	/**
+	 * Serialize a compatible given class into a string of JSON data.
+	 */
+	public static string SerializeJson(object JSONData)
+	{
+		return JsonUtility.ToJson(JSONData);
 	}
 }
 

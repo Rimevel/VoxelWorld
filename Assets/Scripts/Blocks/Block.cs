@@ -13,7 +13,6 @@ namespace VoxelWorld.Blocks
  */
 public class Block
 {
-	private static float vertCorners = 0.5f;
 	public const float TILE_SIZE = 0.5f;
 
 	public bool changed = true;
@@ -74,11 +73,7 @@ public class Block
 	 **/
 	public virtual Tile GetTile(Direction direction)
 	{
-		Tile tile = new Tile();
-		tile.x = 0;
-		tile.y = 0;
-
-		return tile;
+		return new Tile(0, 0);
 	}
 }
 

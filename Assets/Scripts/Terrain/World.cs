@@ -43,7 +43,7 @@ public class World : MonoBehaviour
 		{
 			if(!chunk.Value.needsSaving){continue;}
 
-			Serialization.SaveChunk(chunk.Value);
+			FileManager.SaveChunk(chunk.Value);
 		}
 	}
 
@@ -59,7 +59,7 @@ public class World : MonoBehaviour
 
 		chunks.Add(pos, chunk);
 
-		if(!Serialization.LoadChunk(chunk))
+		if(!FileManager.LoadChunk(chunk))
 		{
 			chunk = terrainGen.ChunkGen(chunk);
 			MakePhysical(chunk);
@@ -126,7 +126,7 @@ public class World : MonoBehaviour
 		Chunk chunk = null;
 		if(chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
 		{
-			Serialization.SaveChunk(chunk);
+			FileManager.SaveChunk(chunk);
 			if(chunk.renderer != null)
 			{
 				Object.Destroy(chunk.renderer.gameObject);
