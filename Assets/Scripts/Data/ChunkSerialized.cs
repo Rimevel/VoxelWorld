@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using VoxelWorld.Terrain;
 
-namespace VoxelWorld.IO
+namespace VoxelWorld.Data
 {
 
 [Serializable]

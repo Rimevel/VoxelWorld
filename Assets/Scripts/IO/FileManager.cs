@@ -4,16 +4,20 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using VoxelWorld.Terrain;
+using VoxelWorld.Data.JSON;
 
 namespace VoxelWorld.IO
 {
 
+/**
+ * Class to make it more simple to quickly read and write files.
+ */
 public class FileManager
 {
 	/** The name of the folder where the save files are stored. */
-	private const string saveFolderName = "Saves";
+	public const string saveFolderName = "Saves";
 	/** The name of the folder where all mods are stored. */
-	private const string modFolderName = "Mods";
+	public const string modFolderName = "Mods";
 
 	/**
 	 * Get the save loctation relative to the games top folder.
@@ -55,17 +59,39 @@ public class FileManager
 	}
 
 	/**
+	 * Get all files with the given name in the given folder.
+	 */
+	public static List<string> GetFilesWithName(string folderPath, string fileName)
+	{
+		List<string> filePaths = new List<string>();
+
+		if(Directory.Exists(folderPath))
+		{
+			foreach(string filePath in Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories))
+			{
+				Debug.Log(filePath);
+				if(Path.GetFileName(filePath) == fileName)
+				{
+					filePaths.Add(filePath);
+				}
+			}
+		}
+
+		return filePaths;
+	}
+
+	/**
 	 * Get all the file paths in the given folder path.
 	 * Searching for a specific file extension is optional.
 	 */
-	public static string[] GetFilesInFolder(string folderPath, string extension = "")
+	public static string[] GetFilesInFolder(string folderPath, string extension = "", SearchOption searchOption = SearchOption.AllDirectories)
 	{
 		if(extension != "")
 		{
 			return Directory.GetFiles(folderPath);
 		}
 
-		return Directory.GetFiles(folderPath, "*" + extension, SearchOption.AllDirectories);
+		return Directory.GetFiles(folderPath, "*" + extension, searchOption);
 	}
 
 	/**
@@ -80,7 +106,7 @@ public class FileManager
 		{
 			foreach(string filePath in Directory.GetFiles(folderLocation))
 			{
-				if(Path.GetExtension(filePath) != ".PNG"){continue;}
+				if(Path.GetExtension(filePath) != ".png"){continue;}
 
 				Texture2D tex = new Texture2D(2, 2, TextureFormat.DXT5, false);
 				byte[] fileData = File.ReadAllBytes(filePath);
@@ -120,7 +146,7 @@ public class FileManager
 	{
 		string fileData;
 
-		if(File.Exists(filePath) && Path.GetExtension(filePath) == ".JSON")
+		if(File.Exists(filePath) && Path.GetExtension(filePath) == ".json")
 		{
 			fileData = File.ReadAllText(filePath);
 			return Serialization.DeserializeJson<T>(fileData);

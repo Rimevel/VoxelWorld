@@ -6,10 +6,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using VoxelWorld.Terrain;
 using VoxelWorld.Util;
+using VoxelWorld.Data;
 
 namespace VoxelWorld.IO
 {
 
+/**
+ * Class with lots of useful functions to help serialize and deserialize
+ * different types of game data.
+ */
 public static class Serialization
 {
 	/**

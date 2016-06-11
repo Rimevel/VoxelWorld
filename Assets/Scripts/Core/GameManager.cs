@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using VoxelWorld.Data.JSON;
+using VoxelWorld.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -30,7 +31,8 @@ public class GameManager : MonoBehaviour
 
 	private void Awake()
 	{
-		
+		state = GameState.INITIALIZING;
+		modList = new Dictionary<string, ModInfo>();
 	}
 
 	private void Update()
@@ -39,9 +41,19 @@ public class GameManager : MonoBehaviour
 		{
 			case GameState.INITIALIZING:
 
+			LoadModList();
+			state = GameState.MAIN_MENU;
+
 			break;
 
 			case GameState.MAIN_MENU:
+
+			foreach(KeyValuePair<string, ModInfo> mods in modList)
+			{
+				Debug.Log(mods.Value.modName);
+			}
+
+			state = GameState.IN_WORLD;
 
 			break;
 
@@ -67,8 +79,19 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
+	/**
+	 * Fill the modlist with all modinfo.json files
+	 * in the mods folder.
+	 */
 	private void LoadModList()
 	{
-		
+		foreach(string filePath in FileManager.GetFilesWithName(FileManager.modFolderName + "/", "modinfo.json"))
+		{
+			ModInfo info = FileManager.LoadJSON<ModInfo>(filePath);
+			if(info != null)
+			{
+				modList.Add(filePath, info);
+			}
+		}
 	}
 }
